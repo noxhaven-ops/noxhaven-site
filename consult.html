@@ -12,6 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <style>
+  [hidden] { display: none !important; }
   .consult { padding: calc(140px + env(safe-area-inset-top, 0px)) 0 clamp(80px, 10vw, 140px); }
   .consult-grid { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.4fr); gap: clamp(40px, 7vw, 110px); align-items: start; }
 
@@ -148,7 +149,7 @@
             <div class="field full">
               <span class="group-label" id="contact-pref">Best way to reach you</span>
               <div class="chips" role="radiogroup" aria-labelledby="contact-pref">
-                <label class="chip"><input type="radio" name="Preferred contact" value="Email" checked><span>Email</span></label>
+                <label class="chip"><input type="radio" name="Preferred contact" value="Email"><span>Email</span></label>
                 <label class="chip"><input type="radio" name="Preferred contact" value="Phone"><span>Phone</span></label>
                 <label class="chip"><input type="radio" name="Preferred contact" value="Either"><span>Either</span></label>
               </div>
@@ -248,6 +249,10 @@
   const btn = document.getElementById('submit-btn');
   const errorBox = document.getElementById('form-error');
   const sent = document.getElementById('sent');
+
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) { form.reset(); form.hidden = false; sent.hidden = true; errorBox.hidden = true; }
+  });
 
   const showError = (msg) => { errorBox.innerHTML = msg; errorBox.hidden = false; };
 
