@@ -81,7 +81,7 @@
   .notice.error { border: 1px solid #c2604f; background: rgba(194,96,79,.08); color: #f0c9bf; }
   .notice.error a { color: inherit; }
 
-  .sent { border: 1px solid var(--gold); border-radius: 16px; padding: clamp(32px, 5vw, 56px); background: var(--coal); }
+  .sent { scroll-margin-top: 110px; border: 1px solid var(--gold); border-radius: 16px; padding: clamp(32px, 5vw, 56px); background: var(--coal); }
   .sent[hidden] { display: none; }
   .sent h2 { font-size: clamp(1.8rem, 3.4vw, 2.6rem); color: var(--gold-pale); margin-bottom: 16px; }
   .sent p { color: var(--muted); margin: 0 0 28px; max-width: 48ch; }
@@ -288,10 +288,19 @@
       if (res.ok && result.success) {
         document.getElementById('sent-text').textContent =
           `Thanks, ${payload.name.split(' ')[0]}. A NoxHaven engineer will reply to ${payload.email} within one business day.`;
+        // Clear everything they entered and reset the form's state
+        form.reset();
+        form.classList.remove('touched');
+        btn.disabled = false;
+        btn.textContent = 'Send request';
+
         form.hidden = true;
         sent.hidden = false;
-        sent.focus();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Bring the confirmation into view wherever it sits on the page
+        const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        sent.focus({ preventScroll: true });
+        sent.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'center' });
       } else {
         throw new Error(result.message || 'Request failed');
       }
