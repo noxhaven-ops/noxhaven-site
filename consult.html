@@ -82,10 +82,23 @@
   .notice.error { border: 1px solid #c2604f; background: rgba(194,96,79,.08); color: #f0c9bf; }
   .notice.error a { color: inherit; }
 
-  .sent { scroll-margin-top: 110px; border: 1px solid var(--gold); border-radius: 16px; padding: clamp(32px, 5vw, 56px); background: var(--coal); }
-  .sent[hidden] { display: none; }
-  .sent h2 { font-size: clamp(1.8rem, 3.4vw, 2.6rem); color: var(--gold-pale); margin-bottom: 16px; }
-  .sent p { color: var(--muted); margin: 0 0 28px; max-width: 48ch; }
+  .sent {
+    width: min(560px, calc(100vw - 40px)); max-height: calc(100dvh - 40px);
+    margin: auto; padding: clamp(32px, 5vw, 52px);
+    border: 1px solid var(--gold); border-radius: 18px;
+    background: var(--coal); color: var(--text);
+    box-shadow: 0 30px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(201,162,75,.15);
+  }
+  .sent::backdrop { background: rgba(0,0,0,.72); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  .sent[open] { animation: pop .28s cubic-bezier(.2,.8,.2,1); }
+  @keyframes pop { from { opacity: 0; transform: translateY(12px) scale(.97); } }
+  .sent-mark { width: 52px; height: 52px; border-radius: 50%; border: 1px solid var(--gold); display: grid; place-items: center; margin-bottom: 24px; }
+  .sent-mark svg { width: 24px; height: 24px; stroke: var(--gold); fill: none; stroke-width: 2; }
+  .sent h2 { font-size: clamp(1.8rem, 3.4vw, 2.4rem); color: var(--gold-pale); margin-bottom: 14px; }
+  .sent p { color: var(--muted); margin: 0 0 30px; max-width: 46ch; }
+  .sent-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+  .sent-actions button { font: inherit; font-weight: 600; cursor: pointer; border: 0; }
+  @media (prefers-reduced-motion: reduce) { .sent[open] { animation: none; } }
 
   @media (max-width: 900px) {
     .consult-grid { grid-template-columns: 1fr; }
@@ -225,11 +238,15 @@
         </div>
       </form>
 
-      <div class="sent" id="sent" hidden tabindex="-1">
-        <h2>Request sent.</h2>
+      <dialog class="sent" id="sent" aria-labelledby="sent-title" aria-describedby="sent-text">
+        <div class="sent-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></div>
+        <h2 id="sent-title">Request sent.</h2>
         <p id="sent-text">Thanks for reaching out. A NoxHaven engineer will reply within one business day.</p>
-        <a class="btn btn-ghost" href="index.html">Back to the homepage</a>
-      </div>
+        <div class="sent-actions">
+          <button class="btn btn-gold" type="button" id="sent-close" autofocus>Close</button>
+          <a class="btn btn-ghost" href="index.html">Back to the homepage</a>
+        </div>
+      </dialog>
     </div>
   </div>
 </main>
@@ -251,7 +268,16 @@
   const sent = document.getElementById('sent');
 
   window.addEventListener('pageshow', (e) => {
-    if (e.persisted) { form.reset(); form.hidden = false; sent.hidden = true; errorBox.hidden = true; }
+    if (e.persisted) { form.reset(); errorBox.hidden = true; if (sent.open) sent.close(); }
+  });
+
+  const closeSent = () => { if (sent.open) sent.close(); else sent.removeAttribute('open'); };
+  document.getElementById('sent-close').addEventListener('click', closeSent);
+  // Clicking the dimmed area outside the box also closes it
+  sent.addEventListener('click', (e) => {
+    const r = sent.getBoundingClientRect();
+    const outside = e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+    if (outside) closeSent();
   });
 
   const showError = (msg) => { errorBox.innerHTML = msg; errorBox.hidden = false; };
@@ -299,13 +325,10 @@
         btn.disabled = false;
         btn.textContent = 'Send request';
 
-        form.hidden = true;
-        sent.hidden = false;
-
-        // Bring the confirmation into view wherever it sits on the page
-        const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        sent.focus({ preventScroll: true });
-        sent.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'center' });
+        // Jump to the top, then show the confirmation centered over the page
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        if (typeof sent.showModal === 'function') sent.showModal();
+        else sent.setAttribute('open', '');
       } else {
         throw new Error(result.message || 'Request failed');
       }
