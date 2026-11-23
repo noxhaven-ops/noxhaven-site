@@ -304,7 +304,6 @@
     const services = data.getAll('services');
     payload['Services of interest'] = services.length ? services.join(', ') : 'None selected';
     payload.subject = `New consultation request: ${payload.Company || payload.name}`;
-    if (payload.botcheck === undefined) payload.botcheck = false;
 
     btn.disabled = true;
     btn.textContent = 'Sending…';
@@ -316,6 +315,7 @@
         body: JSON.stringify(payload)
       });
       const result = await res.json().catch(() => ({}));
+      console.info('Web3Forms response:', res.status, result);
       if (res.ok && result.success) {
         document.getElementById('sent-text').textContent =
           `Thanks, ${payload.name.split(' ')[0]}. A NoxHaven engineer will reply to ${payload.email} within one business day.`;
