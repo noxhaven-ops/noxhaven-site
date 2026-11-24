@@ -21,9 +21,15 @@
   <div class="wrap nav">
     <a class="brand" href="index.html" aria-label="NoxHaven Technologies home">
       <svg viewBox="0 0 32 32" aria-hidden="true">
-        <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3e2a8"/><stop offset="1" stop-color="#a9822f"/></linearGradient></defs>
-        <path d="M21 4.5A12 12 0 1 0 27.5 21 9.5 9.5 0 0 1 21 4.5Z" fill="url(#g)"/>
-        <circle cx="24" cy="9" r="1.6" fill="#f3e2a8"/>
+        <defs>
+          <linearGradient id="nh-gold" gradientUnits="userSpaceOnUse" x1="0" y1="3" x2="0" y2="29"><stop offset="0" stop-color="#f3e2a8"/><stop offset="1" stop-color="#a9822f"/></linearGradient>
+          <mask id="nh-cut" maskUnits="userSpaceOnUse" x="0" y="0" width="32" height="32"><rect width="32" height="32" fill="#fff"/><rect x="0" y="13.6" width="32" height="4.8" fill="#000"/></mask>
+        </defs>
+        <path d="M16 2.5 27.5 6.8V15.2C27.5 22.2 22.6 27.1 16 29.5 9.4 27.1 4.5 22.2 4.5 15.2V6.8Z" fill="none" stroke="url(#nh-gold)" stroke-width="1.8" stroke-linejoin="round"/>
+        <polygon points="12,9.5 13.8,9.5 20,22.5 18.2,22.5" fill="#e8d49a" opacity="0.85" mask="url(#nh-cut)"/>
+        <rect x="9.5" y="9.5" width="3" height="13" fill="url(#nh-gold)"/>
+        <rect x="19.5" y="9.5" width="3" height="13" fill="url(#nh-gold)"/>
+        <rect x="12.5" y="14.6" width="7" height="2.8" fill="url(#nh-gold)"/>
       </svg>
       <span class="brand-name">NoxHaven<span>Technologies</span></span>
     </a>
